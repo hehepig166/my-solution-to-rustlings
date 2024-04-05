@@ -1,0 +1,491 @@
+
+01_variables
+	mut
+	shadowing
+
+02_functions
+
+03_if
+	{}
+	
+04_primitive_types
+	statically typed language, it must know the types of all variables at compile time.
+	bool
+	char		4 types
+	array		['a'; 5]
+
+	slice type	https://doc.rust-lang.org/book/ch04-03-slices.html
+		a kind of reference
+		a = [0, 1, 2, 3, 4, 5];
+		&a[0..5]	-> 0 1 2 3 4
+		a[1]
+		
+
+	tuple
+		let tup: (i32, f64, u8) = (500, 6.4, 1);
+		let (x, y, z) = tup;
+		let second = tup.2;
+
+05_vecs
+	Vec
+		let v: Vec<i32> = Vec::new();
+		let v = vec![1, 2, 3];
+		let v = vec![];
+	for element in v.iter_mut() {*element *= 2;}
+
+06_move_semantics
+	ownership	https://doc.rust-lang.org/book/ch04-01-what-is-ownership.html
+		Each value in Rust has an owner.
+		There can only be one owner at a time.
+		When the owner goes out of scope, the value will be dropped.
+	Rust calls drop automatically at the closing curly bracket.
+	
+	let s2 = s1.clone();
+
+	If a type implements the Copy trait, variables that use it do not move, but rather are trivially copied, making them still valid after assignment to another variable.
+		All the integer types, such as u32.
+		The Boolean type, bool, with values true and false.
+		All the floating-point types, such as f64.
+		The character type, char.
+		Tuples, if they only contain types that also implement Copy. For example, (i32, i32) implements Copy, but (i32, String) does not.
+
+	References and Borrowing
+		& *
+		Mutable references have one big restriction: if you have a mutable reference to a value, you can have no other references to that value. 
+
+	    let mut s = String::from("hello");
+
+	    let r1 = &s; // no problem
+	    let r2 = &s; // no problem
+	    println!("{} and {}", r1, r2);
+	    // variables r1 and r2 will not be used after this point
+	
+	    let r3 = &mut s; // no problem
+	    println!("{}", r3);
+
+		Dangling References
+		
+		fn dangle() -> &String { // dangle returns a reference to a String
+		    let s = String::from("hello"); // s is a new String
+		    &s // we return a reference to the String, s
+		} // Here, s goes out of scope, and is dropped. Its memory goes away.
+		  // Danger!
+
+		fn no_dangle() -> String {
+		    let s = String::from("hello");
+		    s
+		}
+
+07_structs
+	struct User {
+	    active: bool,
+	    username: String,
+	    email: String,
+	    sign_in_count: u64,
+	}
+
+	    let user1 = User {
+	        active: true,
+	        username: String::from("someusername123"),
+	        email: String::from("someone@example.com"),
+	        sign_in_count: 1,
+	    };
+
+	user1.email = String::from("anotheremail@example.com");
+
+	Note that the entire instance must be mutable; Rust doesn’t allow us to mark only certain fields as mutable
+
+	struct update syntax
+	The ..user1 must come last to specify that any remaining fields should get their values from the corresponding fields in user1
+	fn main() {
+	    // --snip--
+	    let user2 = User {
+	        email: String::from("another@example.com"),
+	        ..user1
+	    };
+	}
+	In this example, we can no longer use user1 as a whole after creating user2 because the String in the username field of user1 was moved into user2.
+
+	Using Tuple Structs Without Named Fields to Create Different Types
+	struct Color(i32, i32, i32);
+	struct Point(i32, i32, i32);
+	fn main() {
+	    let black = Color(0, 0, 0);
+	    let origin = Point(0, 0, 0);
+	}
+	Each struct you define is its own type, even though the fields within the struct might have the same types. For example, a function that takes a parameter of type Color cannot take a Point as an argument, even though both types are made up of three i32 values.
+
+	Unit-Like Structs Without Any Fields
+	You can also define structs that don’t have any fields! These are called unit-like structs because they behave similarly to ()
+	struct AlwaysEqual;
+	fn main() {
+	    let subject = AlwaysEqual;
+	}
+
+	[derive(Debug)]
+
+	println!("rect1 is {:?}", rect1);
+	println!("rect1 is {:#?}", rect1);
+
+	Methods
+	impl Rectangle {
+	    fn area(&self) -> u32 {
+	        self.width * self.height
+	    }
+	}
+
+	impl Rectangle {
+	    fn area(&self) -> u32 {
+	        self.width * self.height
+	    }
+	    fn can_hold(&self, other: &Rectangle) -> bool {
+	        self.width > other.width && self.height > other.height
+	    }
+	}
+
+	impl Rectangle {
+	    fn square(size: u32) -> Self {
+	        Self {
+	            width: size,
+	            height: size,
+	        }
+	    }
+	}
+
+08_enums
+	enum IpAddr {
+	    V4(String),
+	    V6(String),
+	}
+	let home = IpAddr::V4(String::from("127.0.0.1"));
+	let loopback = IpAddr::V6(String::from("::1"));
+
+	enum IpAddr {
+	    V4(u8, u8, u8, u8),
+	    V6(String),
+	}
+	let home = IpAddr::V4(127, 0, 0, 1);
+	let loopback = IpAddr::V6(String::from("::1"));
+
+	enum Message {
+	    Quit,
+	    Move { x: i32, y: i32 },
+	    Write(String),
+	    ChangeColor(i32, i32, i32),
+	}
+	impl Message {
+	    fn call(&self) {
+	        // method body would be defined here
+	    }
+	}
+	let m = Message::Write(String::from("hello"));
+	m.call();
+
+	The Option Enum and Its Advantages Over Null Values
+	Option<T>
+
+	The match Control Flow Construct
+
+#[derive(Debug)] // so we can inspect the state in a minute
+enum UsState {
+    Alabama,
+    Alaska,
+    // --snip--
+}
+
+enum Coin {
+    Penny,
+    Nickel,
+    Dime,
+    Quarter(UsState),
+}
+
+fn value_in_cents(coin: Coin) -> u8 {
+    match coin {
+        Coin::Penny => 1,
+        Coin::Nickel => 5,
+        Coin::Dime => 10,
+        Coin::Quarter(state) => {
+            println!("State quarter from {:?}!", state);
+            25
+        }
+    }
+}
+
+
+    fn plus_one(x: Option<i32>) -> Option<i32> {
+        match x {
+            None => None,
+            Some(i) => Some(i + 1),
+        }
+    }
+
+    let five = Some(5);
+    let six = plus_one(five);
+    let none = plus_one(None);
+
+
+    let dice_roll = 9;
+    match dice_roll {
+        3 => add_fancy_hat(),
+        7 => remove_fancy_hat(),
+        _ => {reroll(), ()}
+        other => move_player(other),
+    }
+
+	if let
+
+
+09_strings
+	https://doc.rust-lang.org/stable/book/ch15-02-deref.html#implicit-deref-coercions-with-functions-and-methods
+	https://doc.rust-lang.org/book/ch08-02-strings.html
+	A String is a wrapper over a Vec<u8>
+
+	there are actually three relevant ways to look at strings from Rust’s perspective: as bytes, scalar values, and grapheme clusters (the closest thing to what we would call letters).
+
+	iterating over strings:
+	for c in "你好啊".chars() {println!("{}", c);}
+	for b in "你好啊".bytes() {}
+
+	"rust is fun!".to_owned()	// to create an owned version of a value
+	"nice weather".into()		// converts a value into another type, consuming the original value in the process
+
+10_modules
+	Packages: A Cargo feature that lets you build, test, and share crates
+	Crates: A tree of modules that produces a library or executable
+	Modules and use: Let you control the organization, scope, and privacy of paths
+	Paths: A way of naming an item, such as a struct, function, or module
+
+	use
+	pub
+	as
+	https://openguild.wtf/blog/rust/rustlings-10-modules
+
+
+11_hashmaps
+	use std::collections::HashMap;
+	let mut scores = HashMap::new();
+	scores.insert(String::from("Blue"), 10);
+	scores.insert(String::from("Yellow"), 50);
+	let team_name = String::from("Blue");
+	let score = scores.get(&team_name).copied().unwrap_or(0);
+	// The get method returns an Option<&V>
+	// calling copied to get an Option<i32> rather than an Option<&i32>
+
+	use std::collections::HashMap;
+	let field_name = String::from("Favorite color");
+	let field_value = String::from("Blue");
+	let mut map = HashMap::new();
+	map.insert(field_name, field_value);
+	// field_name and field_value are invalid at this point, try using them and
+	// see what compiler error you get!
+
+	scores.entry(String::from("Yellow")).or_insert(50);
+	for word in text.split_whitespace() {
+		let count = map.entry(word).or_insert(0);
+		*count += 1;
+	}
+
+12_options
+	https://doc.rust-lang.org/stable/book/ch10-01-syntax.html#in-enum-definitions
+	https://doc.rust-lang.org/rust-by-example/flow_control/if_let.html
+
+	let icecreams = maybe_icecream(12).unwrap_or(0);
+
+	while let
+	https://doc.rust-lang.org/rust-by-example/flow_control/while_let.html
+
+fn layered_option() {
+        let range = 10;
+        let mut optional_integers: Vec<Option<i8>> = vec![None];
+
+        for i in 1..(range + 1) {
+            optional_integers.push(Some(i));
+        }
+
+        let mut cursor = range;
+
+        // TODO: make this a while let statement - remember that vector.pop also
+        // adds another layer of Option<T>. You can stack `Option<T>`s into
+        // while let and if let.
+        while let Some(Some(integer)) = optional_integers.pop() {
+            assert_eq!(integer, cursor);
+            cursor -= 1;
+        }
+
+        assert_eq!(cursor, 0);
+    }
+
+	ref
+	https://doc.rust-lang.org/std/keyword.ref.html
+	let y: Option<Point> = Some(Point { x: 100, y: 200 });
+	    match y {
+	        Some(ref p) => println!("Co-ordinates are {},{} ", p.x, p.y),
+	        _ => panic!("no match!"),
+	    }
+
+13_error_handling
+	https://doc.rust-lang.org/book/ch09-02-recoverable-errors-with-result.html
+	enum Result<T, E> {
+	    Ok(T),
+	    Err(E),
+	}
+
+use std::fs::File;
+use std::io::ErrorKind;
+fn main() {
+    let greeting_file_result = File::open("hello.txt");
+
+    let greeting_file = match greeting_file_result {
+        Ok(file) => file,
+        Err(error) => match error.kind() {
+            ErrorKind::NotFound => match File::create("hello.txt") {
+                Ok(fc) => fc,
+                Err(e) => panic!("Problem creating the file: {:?}", e),
+            },
+            other_error => {
+                panic!("Problem opening the file: {:?}", other_error);
+            }
+        },
+    };
+}
+fn main() {
+    let greeting_file = File::open("hello.txt").unwrap_or_else(|error| {
+        if error.kind() == ErrorKind::NotFound {
+            File::create("hello.txt").unwrap_or_else(|error| {
+                panic!("Problem creating the file: {:?}", error);
+            })
+        } else {
+            panic!("Problem opening the file: {:?}", error);
+        }
+    });
+}
+
+	unwrap()
+	expect()
+
+	A Shortcut for Propagating Errors: the ? Operator
+	If the value is an Err, the Err will be returned from the whole function as if we had used the return keyword so the error value gets propagated to the calling code.
+	The ? operator can only be used in functions whose return type is compatible with the value the ? is used on.
+	fn read_username_from_file() -> Result<String, io::Error> {
+	    let mut username_file = File::open("hello.txt")?;
+	    let mut username = String::new();
+	    username_file.read_to_string(&mut username)?;
+	    Ok(username)
+	}
+
+	boxing errors	https://doc.rust-lang.org/stable/rust-by-example/error/multiple_error_types/boxing_errors.html
+	type Result<T> = std::result::Result<T, Box<dyn error::Error>>;
+
+	map_err
+	https://doc.rust-lang.org/std/result/enum.Result.html#method.map_err
+	Maps a Result<T, E> to Result<T, F> by applying a function to a contained Err value, leaving an Ok value untouched.
+	This function can be used to pass through a successful result while handling an error.
+
+
+14_generics
+	https://doc.rust-lang.org/stable/book/ch10-01-syntax.html
+
+struct Point<X1, Y1> {
+    x: X1,
+    y: Y1,
+}
+
+impl<X1, Y1> Point<X1, Y1> {
+    fn mixup<X2, Y2>(self, other: Point<X2, Y2>) -> Point<X1, Y2> {
+        Point {
+            x: self.x,
+            y: other.y,
+        }
+    }
+}
+
+fn main() {
+    let p1 = Point { x: 5, y: 10.4 };
+    let p2 = Point { x: "Hello", y: 'c' };
+
+    let p3 = p1.mixup(p2);
+
+    println!("p3.x = {}, p3.y = {}", p3.x, p3.y);
+}
+
+15_traints
+	https://doc.rust-lang.org/book/ch10-02-traits.html
+	A trait defines functionality a particular type has and can share with other types. We can use traits to define shared behavior in an abstract way. We can use trait bounds to specify that a generic type can be any type that has certain behavior.
+
+	Defining a trait
+	A trait can have multiple methods in its body: the method signatures are listed one per line and each line ends in a semicolon.
+
+	pub trait Summary {
+	    fn summarize(&self) -> String;
+	}
+
+	Implenting a trait on a type
+	
+	impl Summary for NewsArticle {
+	    fn summarize(&self) -> String {
+	        format!("{}, by {} ({})", self.headline, self.author, self.location)
+	    }
+	}
+	impl Summary for Tweet {
+	    fn summarize(&self) -> String {
+	        format!("{}: {}", self.username, self.content)
+	    }
+	}
+
+	Default implementations
+
+	pub trait Summary {
+	    fn summarize(&self) -> String {
+	        String::from("(Read more...)")
+	    }
+	}
+
+	Traits as Parameters
+	
+	pub fn notify(item: &impl Summary) {
+	    println!("Breaking news! {}", item.summarize());
+	}
+
+	Trait Bound Syntax
+	The impl Trait syntax works for straightforward cases but is actually syntax sugar for a longer form known as a trait bound; it looks like this:
+	
+	pub fn notify<T: Summary>(item: &T) {
+	    println!("Breaking news! {}", item.summarize());
+	}
+
+	Specifying Multiple Trait Bounds with the + Syntax
+	
+	pub fn notify(item: &(impl Summary + Display)) {}
+	pub fn notify<T: Summary + Display>(item: &T) {}
+
+16_lifetimes
+	https://tfpk.github.io/lifetimekata/chapter_1.html
+	https://doc.rust-lang.org/stable/rust-by-example/scope/lifetime.html
+	https://doc.rust-lang.org/book/ch10-03-lifetime-syntax.html
+
+	The first rule is that the compiler assigns a lifetime parameter to each parameter that’s a reference. In other words, a function with one parameter gets one lifetime parameter: fn foo<'a>(x: &'a i32); a function with two parameters gets two separate lifetime parameters: fn foo<'a, 'b>(x: &'a i32, y: &'b i32); and so on.
+
+	The second rule is that, if there is exactly one input lifetime parameter, that lifetime is assigned to all output lifetime parameters: fn foo<'a>(x: &'a i32) -> &'a i32.
+
+	The third rule is that, if there are multiple input lifetime parameters, but one of them is &self or &mut self because this is a method, the lifetime of self is assigned to all output lifetime parameters. This third rule makes methods much nicer to read and write because fewer symbols are necessary.
+
+	fn longest<'a>(x: &'a str, y: &'a str) -> &'a str {
+	    if x.len() > y.len() {
+	        x
+	    } else {
+	        y
+	    }
+	}
+
+	struct Book<'a, 'b> {
+	    author: &'a str,
+	    title: &'b str,
+	}
+
+17_tests
+	https://doc.rust-lang.org/book/ch11-01-writing-tests.html
+	assert!
+	assert_eq!
+	assert_ne!
+	#[should_panic]
