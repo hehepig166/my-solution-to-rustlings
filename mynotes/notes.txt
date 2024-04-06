@@ -489,3 +489,35 @@ fn main() {
 	assert_eq!
 	assert_ne!
 	#[should_panic]
+
+18_iterators
+	https://doc.rust-lang.org/book/ch13-02-iterators.html
+
+	The Iterator Trait and the next Method
+	
+	iter.next()
+	iter.into_next()
+	
+	iter.sum()
+	iter.collect()
+
+	iter.map()
+	into_iter.filter()
+	iter.zip()
+
+	Iterators are one of Rust’s zero-cost abstractions, by which we mean using the abstraction imposes no additional runtime overhead.
+
+	pub fn factorial(num: u64) -> u64 {
+	    (1..=num).product()
+	}
+
+	fn count_iterator(map: &HashMap<String, Progress>, value: Progress) -> usize {
+	    // map is a hashmap with String keys and Progress values.
+	    // map = { "variables1": Complete, "from_str": None, ... }
+	    // todo!();
+	    map.values().filter(|&&x| x == value).count()
+	}
+
+
+19_smart_pointers
+	
