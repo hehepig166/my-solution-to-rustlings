@@ -520,4 +520,42 @@ fn main() {
 
 
 19_smart_pointers
-	
+	https://doc.rust-lang.org/book/ch15-01-box.html
+	https://doc.rust-lang.org/stable/book/ch16-00-concurrency.html
+	while references only borrow data, in many cases, smart pointers own the data they point to.
+	Deref
+	Drop
+
+	Box<T>
+	Rc<T>			reference counted smart pointer  (graph)  Note that Rc<T> is only for use in single-threaded scenarios.
+	Ref<T>, RefMut<T>
+	Cow<'a, B>	
+
+	Arc<T> in concurrent situations
+
+20_threads
+	https://doc.rust-lang.org/1.4.0/book/dining-philosophers.html
+	https://doc.rust-lang.org/book/ch16-01-threads.html
+	https://doc.rust-lang.org/book/ch16-03-shared-state.html#atomic-reference-counting-with-arct
+	std::sync::{Arc, Mutex, mpsc}
+	std::thread
+
+	在 Rust 的标准库中，Mutex 的 lock 方法返回一个 MutexGuard 对象，该对象实现了 Drop trait。这意味着当 MutexGuard 对象离开作用域时（例如在函数结束时），会自动释放锁，而不需要显式调用 unlock 方法。这种自动释放锁的机制可以确保在任何情况下（包括发生 panic 时）都能正确释放锁，从而避免死锁等问题。
+	因此，在 Rust 中通常不需要手动调用 unlock 方法来释放 Mutex，只需要通过获取 MutexGuard 对象来访问被 Mutex 保护的数据，然后让 MutexGuard 对象离开作用域即可自动释放锁。
+
+	mpsc: multiple producer, single consumer
+	https://doc.rust-lang.org/book/ch16-02-message-passing.html
+
+	关于 spawn 后的所有权问题，结构体内部不同成员
+
+
+
+
+
+
+
+
+
+
+
+
