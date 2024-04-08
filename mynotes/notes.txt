@@ -548,13 +548,24 @@ fn main() {
 
 	关于 spawn 后的所有权问题，结构体内部不同成员
 
+21_macros
+	https://doc.rust-lang.org/book/ch19-06-macros.html
+	Unlike other things in Rust, the order of "where you define a macro" versus "where you use it" actually matters.
+	#[macro_export]
+	#[rustfmt::skip]
+	macro_rules! my_macro {
+	    () => {
+	        println!("Check out my macro!");
+	    };
+	    ($val:expr) => {
+	        println!("Look at this other macro: {}", $val);
+	    }
+	}
 
-
-
-
-
-
-
+22_clippy
+	The Clippy tool is a collection of lints to analyze your code so you can catch common mistakes and improve your Rust code.
+	unwrap() 在简单的示例和可靠地确定值始终存在的情况下很有用。但在实际开发中，最好使用 match 或者 if let 等模式匹配方式处理 Option 和 Result，以更好地处理错误和边界情况。
+	
 
 
 
