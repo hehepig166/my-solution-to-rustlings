@@ -13,7 +13,7 @@ use std::num::ParseIntError;
 
 fn main() -> Result<(), ParseIntError>{
     let mut tokens = 100;
-    let pretend_user_input = "-";
+    let pretend_user_input = "8";
 
     // let cost = total_cost(pretend_user_input).unwrap();
     let cost = total_cost(pretend_user_input)?;
