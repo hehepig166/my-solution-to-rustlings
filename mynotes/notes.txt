@@ -636,3 +636,10 @@ fn main() {
 
 quiz
 	string.push_str("abc")
+
+	`std::f64::NAN`
+	Rust 中两个 `NAN` 是不相等的，要判断一个浮点数是不是 `NAN`，可以用 `.is_nan()` 函数来判断。
+
+others
+	The function to transform a box to a raw pointer is called `Box::into_raw`, while
+	the function to reconstruct a box from a raw pointer is called `Box::from_raw`.
